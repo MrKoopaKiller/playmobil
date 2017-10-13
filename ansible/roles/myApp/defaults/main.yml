@@ -1,0 +1,12 @@
+---
+app_user    : "app"
+repo_url    : "https://github.com/nodejs/nodejs.org.git"
+repo_branch : "master"
+install_dir : "/var/www/app"
+
+#pm2 ecosystem configuration
+app_name     : "myApp"
+exec_mode    : "cluster"
+instances    : "1"
+start_script : "server.js"
+watch        : false

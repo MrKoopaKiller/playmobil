@@ -1,0 +1,82 @@
+---
+- name: Creating group
+  group:
+    name  : "{{ run_user }}"
+    state : present
+  register: addgroup
+
+- name: Creating user
+  user:
+    name  : "{{ run_user }}"
+    group : "{{run_user}}"
+  register: adduser
+  when: addgroup|changed
+
+- name: Clonning repository
+  git:
+    repo           : "{{ repo_url }}"
+    dest           : "{{ install_dir }}"
+    accept_hostkey : yes
+    force          : yes
+    version        : "{{ repo_branch }}"
+  register: git
+
+- name: Configuring application
+  template:
+    src   : ecosystem.config.yml.j2
+    dest  : "{{install_dir}}/ecosystem.config.yml"
+    owner : "{{ app_user }}"
+    group : "{{ app_user }}"
+    mode  : 0664
+  register: ecosystem
+  when: git|succeeded or git|changed
+
+- name: Configuring application
+  template:
+    src   : package.json.j2
+    dest  : "{{install_dir}}/package.json"
+    owner : "{{ app_user }}"
+    group : "{{ app_user }}"
+    mode  : 0664
+  register: package
+  when: git|succeeded or git|changed
+
+- name: Configuring application
+  template:
+    src   : app_init.sh.j2
+    dest  : "/etc/init.d/app"
+    owner : "{{ app_user }}"
+    group : "{{ app_user }}"
+    mode  : 0755
+  register: appinit
+  when: git|succeeded or git|changed
+
+- name: Installing pm2
+  shell: npm install -g pm2
+  register: pm2
+  when: git|succeeded or git|changed
+
+- name: Running npm install
+  shell: npm install 
+  args:
+    chdir: "{{ install_dir }}"
+  register: npminstall
+  when: pm2|succeeded or pm2|changed
+
+- name: Building...
+  shell: npm run build
+  args:
+    chdir: "{{ install_dir }}"
+  when: npminstall|succeeded or npminstall|changed
+
+- name: Fixing directory permissions
+  file:
+    dest    : "{{ install_dir }}"
+    owner   : "{{ app_user }}"
+    group   : "{{ app_user }}"
+    recurse : yes
+
+- name: Configuring PM2 at boot
+  shell: chkconfig app on
+  register: pm2onboot
+  when: appinit|succeeded or appinit|changed

@@ -1,0 +1,143 @@
+Parameters:
+
+  TerraformBucketName:
+    Type: String
+    Description: A S3 Bucket will be created to store Terraform state file. Please fill with a name to use in S3 bucket name.
+
+Resources:
+
+  TerraformStateBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref TerraformBucketName
+      VersioningConfiguration:
+        Status: Enabled
+
+  ApiUser:
+    Type: AWS::IAM::User
+    Properties:
+      Path: "/"
+
+  ApiUserAccessKey:
+    Type: AWS::IAM::AccessKey
+    Properties:
+      UserName:
+        !Ref ApiUser
+
+  TerraformPolicy:
+    Type: "AWS::IAM::ManagedPolicy"
+    Properties:
+      Path: "/"
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - 'vpc:*'
+            Resource:
+              - '*'
+          - Effect: Allow
+            Action:
+              - 'ec2:*'
+            Resource:
+              - '*'
+          - Effect: Allow
+            Action:
+              - 'cloudwatch:*'
+            Resource:
+              - '*'
+          - Effect: Allow
+            Action:
+              - 'iam:AddRoleToInstanceProfile'
+              - 'iam:AttachRolePolicy'
+              - 'iam:CreateInstanceProfile'
+              - 'iam:CreatePolicy'
+              - 'iam:CreatePolicyVersion'
+              - 'iam:CreateRole'
+              - 'iam:DeleteInstanceProfile'
+              - 'iam:DeletePolicy'
+              - 'iam:DeletePolicyVersion'
+              - 'iam:DeleteRole'
+              - 'iam:DeleteRolePolicy'
+              - 'iam:DetachRolePolicy'
+              - 'iam:GetInstanceProfile'
+              - 'iam:GetPolicy'
+              - 'iam:GetPolicyVersion'
+              - 'iam:RemoveRoleFromInstanceProfile'
+              - 'iam:GetRole'
+              - 'iam:GetRolePolicy'
+              - 'iam:ListAttachedRolePolicies'
+              - 'iam:ListInstanceProfiles'
+              - 'iam:ListEntitiesForPolicy'
+              - 'iam:ListPolicyVersions'
+              - 'iam:ListRolePolicies'
+              - 'iam:ListInstanceProfilesForRole'
+              - 'iam:PutRolePolicy'
+              - 'iam:PassRole'
+            Resource:
+              - '*'
+          - Effect: Allow
+            Action:
+              - 'rds:CreateDBInstance'
+              - 'rds:CreateDBParameterGroup'
+              - 'rds:CreateDBSubnetGroup'
+              - 'rds:CreateOptionGroup'
+              - 'rds:DescribeOptionGroups'
+              - 'rds:DescribeDBSubnetGroups'
+              - 'rds:DescribeDBParameterGroups'
+              - 'rds:DescribeDBParameters'
+              - 'rds:AddTagsToResource'
+              - 'rds:DeleteOptionGroup'
+              - 'rds:DeleteDBParameterGroup'
+              - 'rds:DescribeDBInstances'
+            Resource:
+              - '*'
+          - Effect: Deny
+            Action:
+              - 'aws-portal:*'
+            Resource:
+              - '*'
+          - Effect: Deny
+            Action:
+              - 'route53domains:*'
+            Resource:
+              - '*'
+          - Effect: Allow
+            Action:
+              - 's3:CreateBucket'
+              - 's3:GetObject'
+              - 's3:ListBucket'
+              - 's3:PutObject'
+              - 's3:DeleteBucket'
+            Resource:
+              - '*'
+          - Effect: Allow
+            Action:
+              - 'autoscaling:*'
+            Resource:
+              - '*'
+          - Effect: Allow
+            Action:
+              - 'elasticloadbalancing:*'
+            Resource:
+              - '*'
+          - Effect: Deny
+            Action:
+              - 'aws-marketplace:*'
+            Resource:
+              - '*'
+      Users:
+        - !Ref ApiUser
+
+Outputs:
+
+  TerraformBucketName:
+    Value:
+      !Ref TerraformBucketName
+
+  ApiUserAccessKey:
+    Value:
+      !Ref ApiUserAccessKey
+
+  ApiUserSecretKey:
+    Value: !GetAtt ApiUserAccessKey.SecretAccessKey

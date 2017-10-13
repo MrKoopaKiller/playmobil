@@ -1,0 +1,3 @@
+---
+- name: restart app
+  service: name=app state=restarted enabled=yes

@@ -1,0 +1,3 @@
+#!/bin/bash
+# Start application 
+sudo /etc/init.d/app start

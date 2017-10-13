@@ -1,0 +1,19 @@
+---
+galaxy_info:
+  author: Raphael Rabelo de Oliveira
+  description: Install and Configure NodeJS.org example website using pm2 to manage service. Amazon Linux Supported.
+  company: "http://rabelo.ninja"
+  license: "license (CC-BY, BSD, MIT)"
+  min_ansible_version: 2.3
+  github_branch: master
+  platforms:
+  - name: EL
+    versions:
+    - 5
+    - 6
+  galaxy_tags: 
+    - nodejs
+    - nodejs.org
+    - pm2
+  dependencies:
+    - geerlingguy.nodejs

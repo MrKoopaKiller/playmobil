@@ -1,0 +1,7 @@
+apps:
+  - script    : server.js
+    name      : '{{ app_name}}'
+    cwd       : {{ install_dir }}
+    instances : {{ instances }}
+    exec_mode : {{ exec_mode }}
+    watch     : {{ watch }}

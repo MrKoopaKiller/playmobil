@@ -1,0 +1,10 @@
+---
+- hosts: localhost
+  connection: local
+  become: yes
+  become_method: sudo
+  vars:
+    - run_user: "app"
+  roles:
+    - { role: geerlingguy.nodejs, ansible_distribution_major_version: "6" }
+    - { role: myApp, app_user: "{{ run_user }}", instances: "2"}

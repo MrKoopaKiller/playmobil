@@ -1,0 +1,68 @@
+#!/bin/bash
+# chkconfig: 34 85 75
+# description: Manage {{ app_name }} service using pm2.
+
+# Source function library.
+. /etc/init.d/functions
+
+##### Variables
+#
+APP_USER="{{ app_user }}"
+APP_HOME="{{ install_dir }}"
+APP_ECOSYSTEM="{{ install_dir}}/ecosystem.config.yml"
+#
+##### END Variables
+
+ARGV="$@"
+if [ "x$ARGV" = "x" ] ; then
+    ARGS="help"
+fi
+
+function start() {
+echo -n $"Starting {{ app_name }}: "
+  PM2_COMMAND="pm2 start $APP_ECOSYSTEM"
+
+  if [ $(id -un) != "app" ]; then
+    su - $APP_USER -c "$PM2_COMMAND"
+  else
+    $PM2_COMMAND
+  fi
+  echo
+}
+
+function stop() {
+  PM2_COMMAND="pm2 stop $APP_ECOSYSTEM"
+  if [ $(id -un) != "app" ]; then
+    su - $APP_USER -c "$PM2_COMMAND"
+  else
+    $PM2_COMMAND
+  fi
+}
+
+function restart() {
+  PM2_COMMAND="pm2 restart $APP_ECOSYSTEM"
+  if [ $(id -un) != "app" ]; then
+    su - $APP_USER -c "$PM2_COMMAND"
+  else
+    $PM2_COMMAND
+  fi
+}
+
+function status() {
+  PM2_COMMAND="pm2 list"
+  if [ $(id -un) != "app" ]; then
+    su - $APP_USER -c "$PM2_COMMAND"
+  else
+    $PM2_COMMAND
+  fi
+}
+
+for ARG in $@ $ARGS; do
+  case $ARG in
+    start) start ;;
+    stop)  stop ;;
+    status) status ;;
+    restart) restart ;;
+    *) echo "usage: $0 (start|stop|status|restart)" ; ERROR=2 ;;
+  esac
+done
