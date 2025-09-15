@@ -1,7 +1,9 @@
 # Playmobil
 
-**LinkedIn:** [br.linkedin.com/in/raphaelrabelo](https://br.linkedin.com/in/raphaelrabelo)
-
+> [!IMPORTANT]
+> ***This project is deprecated/obsoleted and won't work for new versions of Terraform/Ansible.***
+>
+> R.I.P 🪦
 
 ## O projeto
 
